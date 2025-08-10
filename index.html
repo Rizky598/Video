@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Text to Video</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    input { width: 300px; padding: 10px; }
+    button { padding: 10px 15px; margin-left: 10px; }
+    video { margin-top: 20px; max-width: 80%; }
+  </style>
+</head>
+<body>
+  <h2>🎥 AI Text to Video</h2>
+  <input type="text" id="prompt" placeholder="Masukkan prompt video...">
+  <button onclick="buatVideo()">Buat Video</button>
+  <p id="status"></p>
+  <video id="video" controls></video>
+
+  <script>
+    async function buatVideo() {
+      const prompt = document.getElementById('prompt').value;
+      if (!prompt) return alert('Masukkan prompt terlebih dahulu!');
+      
+      document.getElementById('status').innerText = '⏳ Membuat video... mohon tunggu';
+      document.getElementById('video').src = '';
+
+      try {
+        const res = await fetch(`http://localhost:3000/txt2vid?prompt=${encodeURIComponent(prompt)}`);
+        const data = await res.json();
+        if (!data?.data?.video_url) {
+          document.getElementById('status').innerText = '❌ Gagal membuat video';
+          return;
+        }
+
+        document.getElementById('status').innerText = '✅ Video selesai dibuat';
+        document.getElementById('video').src = data.data.video_url;
+      } catch (err) {
+        document.getElementById('status').innerText = '❌ Error: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
